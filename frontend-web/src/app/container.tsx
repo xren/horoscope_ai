@@ -11,7 +11,6 @@ export function HomePageContainer() {
   const [birthday, setBirthday] = useState("");
   const [time, setTime] = useState("");
   const [birthplace, setBirthplace] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleValueChange = (newValue: any) => {
     const date = moment(newValue.startDate);
@@ -34,8 +33,6 @@ export function HomePageContainer() {
   };
 
   const onSubmit = () => {
-    setIsLoading(true);
-    console.log("birthday:", birthday);
     router.push(
       "/predict?birthday=" +
         birthday +
@@ -49,7 +46,10 @@ export function HomePageContainer() {
   return (
     <div data-theme="lofi">
       <LightNavbar />
-      <div className="relative top-40 flex flex-col px-56 mx-auto justify-center items-center space-y-8">
+      <div className="relative top-20 flex flex-col px-6 sm:px-0 lg:px-56 md:px-32 mx-auto w-full pb-12 lg:w-2/3 justify-center items-center space-y-8">
+        <h1 className="text-3xl md:text-6xl font-bold text-gray-900 text-center pb-4">
+          Tell me a little about yourself.
+        </h1>
         <div className="w-full flex flex-col space-y-2">
           <h2 className="text-2xl font-semibold">Birth Date</h2>
           <div className="border border-gray-300 rounded-md h-full">
@@ -107,12 +107,9 @@ export function HomePageContainer() {
           />
         </div>
       </div>
-      <div className="fixed left-0 w-full bottom-32 mx-auto flex flex-row justify-center items-center">
+      <div className="fixed left-0 w-full bottom-4 sm:bottom-32 mx-auto flex flex-row justify-center items-center">
         <button className="btn btn-primary btn-wide" onClick={onSubmit}>
-          {isLoading && (
-            <span className="loading loading-spinner loading-md"></span>
-          )}
-          {isLoading ? "Submitting" : "Submit"}
+          Continue
         </button>
       </div>
     </div>

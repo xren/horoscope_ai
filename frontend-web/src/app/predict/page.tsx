@@ -12,6 +12,5 @@ export default function Home({
     birthplace: string;
   };
 }) {
-  console.log("#@@@@", searchParams);
   return <PredictPageContainer prediction={searchParams} />;
 }

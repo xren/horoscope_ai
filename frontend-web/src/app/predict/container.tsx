@@ -18,8 +18,8 @@ export interface Card {
 }
 export interface TableRow {
   sign: string;
-  astros: string[];
-  houses: number;
+  planets: string[];
+  houses: number[];
 }
 
 export interface Description {
@@ -37,7 +37,7 @@ export interface Asepect {
 
 export interface PredictResponse {
   astro_table: TableRow[];
-  aspect: Asepect[];
+  aspects: Asepect[];
   descriptions: Description[];
 }
 
@@ -49,12 +49,21 @@ export interface PredictRequest {
 
 export interface ChatRequest {
   question: string;
+  astro_table: AstroTable;
+  aspect: Aspect;
+}
+
+export interface AstroTable {
   astro_table: TableRow[];
-  aspect: Asepect[];
+}
+
+export interface Aspect {
+  aspects: Asepect[];
 }
 
 export interface ChatResponse {
-  answer: string;
+  short_summary: string;
+  long_description: string;
 }
 
 const icons = [
@@ -85,11 +94,12 @@ export function PredictPageContainer({
     var rows = [];
     for (var i = 0; i < predictRes.astro_table.length; i++) {
       var row = predictRes.astro_table[i];
-      var rowCount = _.max([row.astros.length, 1]) || 0;
+      var rowCount = _.max([row.planets.length, 1]) || 0;
       for (var j = 0; j < rowCount; j++) {
-        var gong = row.astros[j];
+        var gong = row.planets[j];
+        var house = row.houses[j];
         if (j == 0) {
-          rows.push([row.sign, j, rowCount, gong, row.houses]);
+          rows.push([row.sign, j, rowCount, gong, house]);
         } else {
           rows.push(["", j, rowCount, gong, ""]);
         }
@@ -99,7 +109,6 @@ export function PredictPageContainer({
   };
 
   const onClickChatButton = () => {
-    console.log(">>> onClickChatButton");
     router.push("/chat");
   };
 
@@ -108,7 +117,7 @@ export function PredictPageContainer({
       {isLoading && (
         <>
           <span className="loading loading-spinner loading-lg mt-60"></span>
-          <h2 className="text-2xl font-semibold">Loading Your Astros...</h2>
+          <h2 className="text-2xl font-semibold mt-8">Analyzing..</h2>
         </>
       )}
       {!_.isEmpty(predictRes) && !isLoading && (
@@ -118,7 +127,7 @@ export function PredictPageContainer({
               return (
                 <div
                   key={`short-summary-${index}`}
-                  className="flex flex-col justify-center items-center space-y-2"
+                  className="flex flex-col justify-center items-center space-y-2 text-center"
                 >
                   {icons[index]}
                   <h2 className="text-2xl font-semibold">{card.header}</h2>
@@ -127,12 +136,12 @@ export function PredictPageContainer({
               );
             })}
           </div>
-          <div className="flex flex-col w-1/2 mx-auto space-y-8">
+          <div className="flex flex-col w-full sm:w-1/2 mx-auto space-y-8 mt-4">
             {predictRes.descriptions.map((detail, index) => {
               return (
                 <div
                   key={`long-summary-${index}`}
-                  className="flex flex-col space-y-4 border  p-8 "
+                  className="flex flex-col space-y-4 border p-8 "
                 >
                   <h2 className="text-2xl font-bold">{detail.header}</h2>
                   <p>{detail.long_description}</p>
@@ -140,7 +149,7 @@ export function PredictPageContainer({
               );
             })}
           </div>
-          <div className="px-4 sm:px-6 lg:px-8 w-1/2 border">
+          <div className="px-4 sm:px-6 lg:px-8 w-full sm:w-1/2 border">
             <div className="flow-root">
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle ">
@@ -151,7 +160,7 @@ export function PredictPageContainer({
                           Signs
                         </th>
                         <th className="text-center py-2 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
-                          Astros
+                          Planets
                         </th>
                         <th className="text-center py-2 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-0">
                           Houses

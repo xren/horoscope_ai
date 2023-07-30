@@ -1,7 +1,12 @@
 "use client";
 
-import _ from "lodash";
-import { SunIcon, MoonIcon, ArrowUpIcon } from "@heroicons/react/24/outline";
+import _, { set } from "lodash";
+import {
+  UserCircleIcon,
+  HeartIcon,
+  BriefcaseIcon,
+  MoonIcon,
+} from "@heroicons/react/24/outline";
 import {
   BarsArrowUpIcon,
   QuestionMarkCircleIcon,
@@ -15,32 +20,52 @@ import * as idb from "idb-keyval";
 import { PredictResponse } from "../predict/container";
 
 const tabs = [
-  { name: "SELF", href: "#", current: false },
-  { name: "LOVE", href: "#", current: false },
-  { name: "WORK", href: "#", current: true },
-  { name: "MOOD", href: "#", current: false },
+  {
+    name: "SELF",
+    href: "#",
+    current: false,
+    icon: <UserCircleIcon className="w-8 h-8" />,
+  },
+  {
+    name: "LOVE",
+    href: "#",
+    current: false,
+    icon: <HeartIcon className="w-8 h-8" />,
+  },
+  {
+    name: "WORK",
+    href: "#",
+    current: true,
+    icon: <BriefcaseIcon className="w-8 h-8" />,
+  },
+  {
+    name: "MOOD",
+    href: "#",
+    current: false,
+    icon: <MoonIcon className="w-8 h-8" />,
+  },
 ];
 
 const questions = {
   SELF: [
-    "WHO AM I REALLY?",
-    "WHAT SHOULD I BE DOING WITH MY LIFE?",
-    "WHAT ARE MY RED FLAGS?",
+    "I feel lost lately and uncertain about my career path. Can you help me find a clearer direction?",
+    "I'm going through a major life transition and could use some guidance. How can I tap into my inner resilience?",
+    "I often struggle with self-doubt and negative thoughts. What practices can I adopt?",
   ],
   LOVE: [
-    "HAVE I MET MY SOULMATE?",
-    "WILL I EVER FIND LOVE?",
-    "WHAT'S MY TYPE?",
+    "I've recently started seeing someone, and I'm curious about our romantic compatibility.",
+    "I've been in a challenging long-distance relationship. How can I maintain a strong emotional connection?",
+    "I've had a series of unsuccessful relationships. What patterns should I be aware of?",
   ],
   WORK: [
-    "WILL I BE SUCCESSFUL?",
-    "WHAT GOAL SHOULD I SET FOR MYSELF?",
-    "SHOULD I QUIT MY JOB?",
+    "I'm considering a career change. Can you guide which career paths fits me?",
+    "I'm facing conflicts with a colleague at work. How can I resolve these issues?",
+    "I often struggle with work-life balance and feel overwhelmed. What should I do?",
   ],
   MOOD: [
-    "WHAT IS A TRUTH THAT I'VE BEEN IGNORING?",
-    "SHOULD I START A CULT?",
-    "AM I A POET?",
+    "Lately, I've been feeling quite anxious and stressed. Are there specific astrological factors contributing to this?",
+    "I've been experiencing a lack of motivation and energy. How can I overcome this slump?",
+    "My mood seems to fluctuate. Can you suggest ways to achieve emotional stability?",
   ],
 } as { [key: string]: string[] };
 
@@ -50,7 +75,8 @@ export function ChatContainer() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [payload, setPayload] = useState({} as PredictResponse);
-
+  const [shortSummary, setShortSummary] = useState("");
+  const [longDescription, setLongDescription] = useState("");
   React.useEffect(() => {
     idb.get("horoscopeAI").then(async (saved: PredictResponse) => {
       if (saved) {
@@ -72,23 +98,32 @@ export function ChatContainer() {
   };
 
   const onClickAsk = async () => {
+    setIsLoading(true);
     const response = await chat({
       question: question,
-      astro_table: payload.astro_table,
-      aspect: payload.aspect,
+      astro_table: {
+        astro_table: payload.astro_table,
+      },
+      aspect: {
+        aspects: payload.aspects,
+      },
     }).then((res) => {
+      setIsLoading(false);
+      setShortSummary(res.short_summary);
+      setLongDescription(res.long_description);
+      console.log(">>chat", res);
       setOpen(true);
     });
   };
 
   return (
     <div className="flex flex-col items-center justify-center space-y-8 p-8">
-      <div className="relative pt-40 w-full sm:w-1/2 flex flex-col justify-center items-center text-center">
-        <h1 className="text-4xl sm:text-7xl font-bold text-gray-900">
-          Hi, Chandler.
+      <div className="relative pt-24 w-full sm:w-1/2 flex flex-col justify-center items-center text-center">
+        <h1 className="text-4xl sm:text-4xl font-bold text-gray-900">
+          Welcome Chandler 👋.
         </h1>
-        <h1 className="text-4xl sm:text-7xl font-bold text-gray-900">
-          What's on your mind?
+        <h1 className="text-4xl sm:text-4xl font-bold text-gray-900 mt-2">
+          Chart your course with the stars.
         </h1>
       </div>
       <div className="px-4 w-full justify-center items-center flex flex-col space-y-8">
@@ -96,6 +131,8 @@ export function ChatContainer() {
           type="text"
           placeholder="Type here"
           className="input input-bordered w-full max-w-lg"
+          value={question}
+          onChange={onChangePrompt}
         />
 
         <button
@@ -133,12 +170,12 @@ export function ChatContainer() {
                 section == tab.name
                   ? "bg-gray-100 text-gray-700"
                   : "text-gray-500 hover:text-gray-700",
-                "rounded-md px-3 py-2 text-sm font-medium flex flex-col justify-center items-center text-center"
+                "rounded-md px-3 py-2 text-sm font-medium flex flex-col gap-2 justify-center items-center text-center"
               )}
               aria-current={section == tab.name ? "page" : undefined}
               onClick={() => onClickTabs(tab.name)}
             >
-              <QuestionMarkCircleIcon className="w-10 h-10" />
+              {tab.icon}
               {tab.name}
             </a>
           ))}
@@ -173,7 +210,7 @@ export function ChatContainer() {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="flex min-h-full items-start justify-center p-4 text-center sm:items-start sm:p-0">
+            <div className="flex min-h-full items-start justify-start p-4 text-center sm:items-start sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -192,35 +229,12 @@ export function ChatContainer() {
                     <div className="grid grid-cols-2 text-center items-center p-4 justify-center space-y-4 border-t-2 border-black">
                       <img
                         src="/chat_ill.png"
-                        className="w-32 mx-auto h-full"
+                        className="w-32 mx-auto h-auto"
                       />
-                      <p>
-                        You are a natural leader and others look to you to lead
-                        the way.{" "}
-                      </p>
+                      <p>{shortSummary}</p>
                     </div>
                     <div className="p-4 flex flex-col items-center justify-center space-y-4 border-t-2 border-black">
-                      <p>
-                        You are a natural leader and others look to you to lead
-                        the way. You are independent, loyal and proud. You are
-                        very ambitious and usually get what you want. You are
-                        generous and warm. You love to be in the limelight and
-                        are very creative and attractive. You are a natural
-                        leader and others look to you to lead the way. You are
-                        independent, loyal and proud. You are very ambitious and
-                        usually get what you want. You are generous and warm.
-                        You love to be in the limelight and are very creative
-                        and attractive. You are a natural leader and others look
-                        to you to lead the way. You are independent, loyal and
-                        proud. You are very ambitious and usually get what you
-                        want. You are generous and warm. You love to be in the
-                        limelight and are very creative and attractive. You are
-                        a natural leader and others look to you to lead the way.
-                        You are independent, loyal and proud. You are very
-                        ambitious and usually get what you want. You are
-                        generous and warm. You love to be in the limelight and
-                        are very creative and attractive.
-                      </p>
+                      <p>{longDescription}</p>
                     </div>
                   </div>
 
