@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  backend-api-database:
+    image: postgres:15.0
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust # https://andrew.hawker.io/dailies/2020/02/25/postgres-uninitialized-error/
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+  horoscope-web:
+    build:
+      context: ./
+      dockerfile: frontend-web/build/Dockerfile
+    image: horoscope-web
+    container_name: "horoscope-web"
+    platform: linux/amd64
+    environment:
+      server_env: ${server_env:-local}
+    ports:
+      - "5004:5004"
+
+volumes:
+  db:
+    driver: local
