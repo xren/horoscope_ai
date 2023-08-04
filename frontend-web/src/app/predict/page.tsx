@@ -1,5 +1,5 @@
 import React from "react";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation"; not used
 import { PredictPageContainer } from "./container";
 import { getHoroscopePrediction } from "@/clients/backend_client";
 

@@ -54,7 +54,7 @@ export function InputPageContainer() {
       <LightNavbar />
       <div className="relative top-20 flex flex-col px-6 sm:px-0 lg:px-56 md:px-32 mx-auto w-full pb-12 lg:w-2/3 justify-center items-center space-y-8">
         <h1 className="text-2xl md:text-4xl font-bold text-gray-900 text-center pb-4">
-          Locked up in your tower of self-restriction is a timid child who wants to love and be loved
+        Chart your course with the stars
         </h1>
         <div className="w-full flex flex-col space-y-2">
           <h2 className="text-2xl font-semibold">Birth Date</h2>
@@ -113,7 +113,7 @@ export function InputPageContainer() {
       </div>
       <div className="fixed left-0 w-full bottom-4 sm:bottom-32 mx-auto flex flex-row justify-center items-center">
         <button className="btn btn-primary btn-wide" onClick={onSubmit}>
-          Continue
+          Get Ur Chart
         </button>
       </div>
     </div>
