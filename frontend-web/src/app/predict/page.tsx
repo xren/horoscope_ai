@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { PredictPageContainer } from "./container";
 import { getHoroscopePrediction } from "@/clients/backend_client";
 
-export default function Home({
+export default function Input({
   searchParams,
 }: {
   searchParams: {
