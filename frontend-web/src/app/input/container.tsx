@@ -57,7 +57,7 @@ export function InputPageContainer() {
         Chart your course with the stars
         </h1>
         <div className="w-full flex flex-col space-y-2">
-          <h2 className="text-2xl font-semibold">BirthDay</h2>
+          <h2 className="text-2xl font-semibold">Birth Day</h2>
           <div className="border border-gray-300 rounded-md h-full">
             <Datepicker
               primaryColor={"blue"}
