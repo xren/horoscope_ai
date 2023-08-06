@@ -107,7 +107,10 @@ export function InputPageContainer() {
           <h2 className="text-2xl font-semibold">Birth Place</h2>
           <ReactSelect 
             options={cityOptions} 
-            onChange={(selectedOption) => setBirthplace(selectedOption.value)} 
+            onChange={(selectedOption) => {
+              if (selectedOption)
+              setBirthplace(selectedOption.value)
+            }} 
           />
         </div>
       </div>
